@@ -5,9 +5,19 @@ import { ProductCard } from './ProductCard';
 
 type ProductListProps = {
   products: Product[];
+  quantities: Record<string, number>;
+  onIncrease: (product: Product) => void;
+  onDecrease: (product: Product) => void;
+  onOpen: (product: Product) => void;
 };
 
-export function ProductList({ products }: ProductListProps) {
+export function ProductList({
+  products,
+  quantities,
+  onIncrease,
+  onDecrease,
+  onOpen,
+}: ProductListProps) {
   return (
     <View style={styles.section}>
       <View style={styles.headingRow}>
@@ -18,7 +28,16 @@ export function ProductList({ products }: ProductListProps) {
       </View>
 
       {products.length > 0 ? (
-        products.map((product) => <ProductCard key={product.id} product={product} />)
+        products.map((product) => (
+          <ProductCard
+            key={product.id}
+            onDecrease={onDecrease}
+            onIncrease={onIncrease}
+            onOpen={onOpen}
+            product={product}
+            quantity={quantities[product.id] ?? 0}
+          />
+        ))
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>No products found</Text>

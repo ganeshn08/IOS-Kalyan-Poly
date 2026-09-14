@@ -4,36 +4,74 @@ import { colors } from '../theme';
 
 type ProductCardProps = {
   product: Product;
+  quantity: number;
+  onIncrease: (product: Product) => void;
+  onDecrease: (product: Product) => void;
+  onOpen: (product: Product) => void;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({
+  product,
+  quantity,
+  onIncrease,
+  onDecrease,
+  onOpen,
+}: ProductCardProps) {
   return (
     <View style={styles.card}>
-      <View style={styles.productImage}>
+      <Pressable
+        accessibilityLabel={`View details for ${product.name}`}
+        accessibilityRole="button"
+        onPress={() => onOpen(product)}
+        style={({ pressed }) => [styles.productImage, pressed && styles.buttonPressed]}
+      >
         <View style={styles.pipeOuter}>
           <View style={styles.pipeInner} />
         </View>
         <Text style={styles.imageLabel}>{product.brand.toUpperCase()}</Text>
-      </View>
+      </Pressable>
 
       <View style={styles.details}>
         <Text style={styles.stock}>IN STOCK</Text>
-        <Text numberOfLines={2} style={styles.name}>
-          {product.name}
-        </Text>
+        <Pressable onPress={() => onOpen(product)}>
+          <Text numberOfLines={2} style={styles.name}>{product.name}</Text>
+        </Pressable>
         <Text style={styles.specification}>
           {product.thicknessMm} mm · {product.coilLengthM.toLocaleString('en-IN')} m coil
         </Text>
 
         <View style={styles.footer}>
           <Text style={styles.price}>₹{product.price.toLocaleString('en-IN')}</Text>
-          <Pressable
-            accessibilityLabel={`Add ${product.name} to cart`}
-            accessibilityRole="button"
-            style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
-          >
-            <Text style={styles.addButtonText}>ADD</Text>
-          </Pressable>
+          {quantity === 0 ? (
+            <Pressable
+              accessibilityLabel={`Add ${product.name} to cart`}
+              accessibilityRole="button"
+              onPress={() => onIncrease(product)}
+              style={({ pressed }) => [styles.addButton, pressed && styles.buttonPressed]}
+            >
+              <Text style={styles.addButtonText}>ADD</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.quantityControl}>
+              <Pressable
+                accessibilityLabel={`Remove one ${product.name}`}
+                accessibilityRole="button"
+                onPress={() => onDecrease(product)}
+                style={({ pressed }) => [styles.quantityButton, pressed && styles.buttonPressed]}
+              >
+                <Text style={styles.quantitySymbol}>−</Text>
+              </Pressable>
+              <Text style={styles.quantity}>{quantity}</Text>
+              <Pressable
+                accessibilityLabel={`Add another ${product.name}`}
+                accessibilityRole="button"
+                onPress={() => onIncrease(product)}
+                style={({ pressed }) => [styles.quantityButton, pressed && styles.buttonPressed]}
+              >
+                <Text style={styles.quantitySymbol}>+</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -119,7 +157,7 @@ const styles = StyleSheet.create({
     minWidth: 78,
     paddingHorizontal: 18,
   },
-  addButtonPressed: {
+  buttonPressed: {
     opacity: 0.7,
   },
   addButtonText: {
@@ -127,5 +165,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     letterSpacing: 0.8,
+  },
+  quantityControl: {
+    alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderRadius: 12,
+    flexDirection: 'row',
+    height: 40,
+    justifyContent: 'space-between',
+    minWidth: 112,
+  },
+  quantityButton: {
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    width: 38,
+  },
+  quantitySymbol: {
+    color: colors.onAccent,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  quantity: {
+    color: colors.onAccent,
+    fontSize: 14,
+    fontWeight: '900',
   },
 });
