@@ -12,7 +12,7 @@ export function Screen({ children, scroll = false }: ScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       {scroll ? (
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
           {children}
         </ScrollView>
       ) : (

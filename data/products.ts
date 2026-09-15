@@ -1,3 +1,7 @@
+import type { ImageSourcePropType } from 'react-native';
+
+const finolexPhoto: ImageSourcePropType = require('../assets/images/finolex-drip.png');
+
 export type ProductCategory = 'drip' | 'pipes' | 'fittings';
 
 export type Product = {
@@ -9,11 +13,13 @@ export type Product = {
   coilLengthM: number;
   price: number;
   inStock: boolean;
+  image: ImageSourcePropType;
 };
 
 export const products: Product[] = [
   {
     id: 'finolex-f04',
+    image: finolexPhoto,
     name: 'Drip Irrigation Pipe F04',
     brand: 'Finolex',
     category: 'drip',
@@ -24,6 +30,7 @@ export const products: Product[] = [
   },
   {
     id: 'finolex-f03',
+    image: finolexPhoto,
     name: 'Drip Irrigation Pipe F03',
     brand: 'Finolex',
     category: 'drip',
@@ -34,6 +41,7 @@ export const products: Product[] = [
   },
   {
     id: 'finolex-f02',
+    image: finolexPhoto,
     name: 'Drip Irrigation Pipe F02',
     brand: 'Finolex',
     category: 'drip',

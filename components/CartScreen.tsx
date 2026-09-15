@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Product } from '../data/products';
 import { colors } from '../theme';
 import { Screen } from './Screen';
@@ -59,7 +59,7 @@ export function CartScreen({
               return (
                 <View key={product.id} style={styles.item}>
                   <View style={styles.thumbnail}>
-                    <View style={styles.pipe} />
+                    <Image source={product.image} resizeMode="contain" accessibilityLabel={product.name} style={{ width: 72, height: 72, borderRadius: 14 }} />
                   </View>
                   <View style={styles.itemDetails}>
                     <Text numberOfLines={2} style={styles.itemName}>{product.name}</Text>

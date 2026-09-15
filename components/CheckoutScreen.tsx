@@ -22,8 +22,26 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
-  const canContinue =
-    name.trim().length > 1 && phone.trim().length >= 10 && address.trim().length > 5;
+  const [attemptedReview, setAttemptedReview] = useState(false);
+  const errors = {
+    name: name.trim().length < 2 ? 'Enter your full name (at least 2 characters).' : '',
+    phone: !/^\d{10}$/.test(phone) ? 'Enter exactly 10 digits, without the +91 prefix.' : '',
+    address: address.trim().length < 6
+      ? 'Enter your delivery address, including your village or city and PIN code.'
+      : '',
+  };
+
+  function reviewOrder() {
+    setAttemptedReview(true);
+    if (Object.values(errors).some(Boolean) || itemCount === 0) return;
+
+    onReview({
+      name: name.trim(),
+      phone,
+      address: address.trim(),
+      notes: notes.trim(),
+    });
+  }
 
   return (
     <Screen scroll>
@@ -47,6 +65,7 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
 
         <Text style={styles.label}>Full name</Text>
         <TextInput
+          accessibilityLabel="Full name"
           autoCapitalize="words"
           onChangeText={setName}
           placeholder="Enter your name"
@@ -54,6 +73,9 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
           style={styles.input}
           value={name}
         />
+        {attemptedReview && errors.name ? (
+          <Text accessibilityRole="alert" style={styles.error}>{errors.name}</Text>
+        ) : null}
 
         <Text style={styles.label}>Phone number</Text>
         <View style={styles.phoneRow}>
@@ -61,6 +83,7 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
             <Text style={styles.countryCodeText}>+91</Text>
           </View>
           <TextInput
+            accessibilityLabel="Phone number, without country code"
             keyboardType="phone-pad"
             maxLength={10}
             onChangeText={setPhone}
@@ -70,11 +93,15 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
             value={phone}
           />
         </View>
+        {attemptedReview && errors.phone ? (
+          <Text accessibilityRole="alert" style={styles.error}>{errors.phone}</Text>
+        ) : null}
 
         <Text style={[styles.sectionLabel, styles.addressSection]}>DELIVERY ADDRESS</Text>
 
         <Text style={styles.label}>Complete address</Text>
         <TextInput
+          accessibilityLabel="Complete delivery address"
           multiline
           onChangeText={setAddress}
           placeholder="House, street, village, taluka and PIN code"
@@ -83,6 +110,9 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
           textAlignVertical="top"
           value={address}
         />
+        {attemptedReview && errors.address ? (
+          <Text accessibilityRole="alert" style={styles.error}>{errors.address}</Text>
+        ) : null}
 
         <Text style={styles.label}>Order notes (optional)</Text>
         <TextInput
@@ -106,24 +136,17 @@ export function CheckoutScreen({ itemCount, total, onBack, onReview }: CheckoutS
 
       <Pressable
         accessibilityRole="button"
-        disabled={!canContinue}
-        onPress={() => onReview({
-          name: name.trim(),
-          phone: phone.trim(),
-          address: address.trim(),
-          notes: notes.trim(),
-        })}
+        onPress={reviewOrder}
         style={({ pressed }) => [
           styles.continueButton,
-          !canContinue && styles.continueButtonDisabled,
-          pressed && canContinue && styles.pressed,
+          pressed && styles.pressed,
         ]}
       >
         <Text style={styles.continueText}>Review order</Text>
         <Text style={styles.continueArrow}>→</Text>
       </Pressable>
-      {!canContinue && (
-        <Text style={styles.formHint}>Enter your name, phone number, and address to continue.</Text>
+      {attemptedReview && itemCount === 0 && (
+        <Text accessibilityRole="alert" style={styles.error}>Your cart is empty. Go back and add a product.</Text>
       )}
     </Screen>
   );
@@ -151,9 +174,8 @@ const styles = StyleSheet.create({
   summaryHint: { color: colors.textMuted, fontSize: 10, marginTop: 3 },
   summaryTotal: { color: colors.text, fontSize: 20, fontWeight: '900' },
   continueButton: { alignItems: 'center', backgroundColor: colors.hero, borderRadius: 16, flexDirection: 'row', justifyContent: 'space-between', marginTop: 14, paddingHorizontal: 20, paddingVertical: 17 },
-  continueButtonDisabled: { backgroundColor: '#AEB4BF' },
   continueText: { color: colors.onHero, fontSize: 15, fontWeight: '800' },
   continueArrow: { color: colors.accent, fontSize: 22 },
-  formHint: { color: colors.textMuted, fontSize: 10, marginTop: 9, textAlign: 'center' },
+  error: { color: '#B42318', fontSize: 12, lineHeight: 18, marginTop: 6 },
   pressed: { opacity: 0.7 },
 });

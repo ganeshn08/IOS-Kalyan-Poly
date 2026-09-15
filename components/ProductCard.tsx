@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Product } from '../data/products';
 import { colors } from '../theme';
 
@@ -25,10 +25,7 @@ export function ProductCard({
         onPress={() => onOpen(product)}
         style={({ pressed }) => [styles.productImage, pressed && styles.buttonPressed]}
       >
-        <View style={styles.pipeOuter}>
-          <View style={styles.pipeInner} />
-        </View>
-        <Text style={styles.imageLabel}>{product.brand.toUpperCase()}</Text>
+        <Image source={product.image} resizeMode="contain" accessibilityLabel={product.name} style={{ width: '100%', height: '100%' }} />
       </Pressable>
 
       <View style={styles.details}>
